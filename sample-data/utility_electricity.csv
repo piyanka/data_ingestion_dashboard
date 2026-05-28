@@ -1,0 +1,41 @@
+billing_start,billing_end,billing_date,activity_type,kwh,mwh,unit,meter_id,site,tariff,original_quantity,original_unit,scope,notes
+2025-01-01,2025-01-27,2025-01-29,electricity,12450,,kWh,MT-1001,Head Office,T1,12450,kWh,scope_2,normal billing cycle
+28/01/2025,2025-02-24,2025-02-26,electricity,,13.20,MWh,MT-1002,Plant A,T2,13.20,MWh,scope_2,partial month reading
+2025/02/01,2025/02/28,03/03/2025,electricity,18640,,kWh,MT-1003,Distribution Center,T1,18640,kWh,scope_2,includes HVAC load
+2025-02-10,2025-03-09,2025-03-11,electricity,9720,,kWh,MT-1004,Warehouse West,T3,9720,kWh,scope_2,billing period spans two months
+12.03.2025,08.04.2025,2025-04-10,electricity,,9.80,MWh,MT-1005,Plant B,T2,9.80,MWh,scope_2,meter estimated by portal
+2025-03-01,2025-03-31,2025-04-02,electricity,21400,,kWh,MT-1006,Head Office,T1,21400,kWh,scope_2,high summer cooling
+05/04/2025,04/05/2025,2025-05-06,electricity,15880,,kWh,MT-1007,Plant A,T2,15880,kWh,scope_2,tariff increase noted
+2025-04-07,2025-05-04,2025-05-07,electricity,,11.40,MWh,MT-1008,Distribution Center,T1,11.40,MWh,scope_2,portal export only
+2025/04/15,2025/05/14,2025-05-16,electricity,13890,,kWh,MT-1009,Warehouse West,T3,13890,kWh,scope_2,non calendar billing
+18.04.2025,15.05.2025,2025-05-17,electricity,16650,,kWh,MT-1010,Head Office,T1,16650,kWh,scope_2,mid month close
+2025-05-01,2025-05-28,2025-05-30,electricity,20110,,kWh,MT-1011,Plant B,T2,20110,kWh,scope_2,peak production week
+03/05/2025,31/05/2025,2025-06-02,electricity,7450,,kWh,MT-1012,Remote Office,T4,7450,kWh,scope_2,small site baseline
+2025-01-12,2025-02-08,2025-02-10,electricity,12990,,kWh,MT-1013,Plant A,T2,12990,kWh,scope_2,winter heating load
+2025/01/20,2025/02/17,2025-02-19,electricity,,7.65,MWh,MT-1014,Warehouse East,T3,7.65,MWh,scope_2,estimated meter read
+22.02.2025,21.03.2025,2025-03-24,electricity,11340,,kWh,MT-1015,Head Office,T1,11340,kWh,scope_2,maintenance outage recovery
+2025-03-15,2025-04-12,2025-04-14,electricity,16420,,kWh,MT-1016,Plant B,T2,16420,kWh,scope_2,extra shift week
+17/03/2025,15/04/2025,2025-04-17,electricity,0,,kWh,MT-1017,Remote Office,T4,0,kWh,scope_2,zero reading for review
+2025-04-20,2025-05-18,2025-05-20,electricity,14610,,kWh,MT-1018,Warehouse East,T3,14610,kWh,scope_2,tariff migration
+2025/04/28,2025/05/26,2025-05-28,electricity,,8.10,MWh,MT-1019,Plant A,T2,8.10,MWh,scope_2,holiday adjusted estimate
+30.04.2025,27.05.2025,2025-05-29,electricity,17550,,kWh,MT-1020,Head Office,T1,17550,kWh,scope_2,normal usage
+2025-05-05,2025-06-01,2025-06-03,electricity,18990,,kWh,MT-1021,Plant B,T2,18990,kWh,scope_2,month boundary spillover
+07/05/2025,04/06/2025,2025-06-05,electricity,13220,,kWh,MT-1022,Distribution Center,T1,13220,kWh,scope_2,summer ramp up
+2025/05/11,2025/06/08,2025-06-10,electricity,,10.20,MWh,MT-1023,Warehouse West,T3,10.20,MWh,scope_2,consumption from portal csv
+13.05.2025,10.06.2025,2025-06-12,electricity,14960,,kWh,MT-1024,Remote Office,T4,14960,kWh,scope_2,shared tenancy floor
+2025-01-25,2025-02-21,2025-02-24,electricity,15670,,kWh,MT-1025,Plant A,T2,15670,kWh,scope_2,weekend production
+27/01/2025,24/02/2025,2025-02-26,electricity,12110,,kWh,MT-1026,Warehouse East,T3,12110,kWh,scope_2,small variation
+2025-02-14,2025-03-13,2025-03-15,electricity,,9.05,MWh,MT-1027,Head Office,T1,9.05,MWh,scope_2,portal anomaly
+16.02.2025,15.03.2025,2025-03-17,electricity,14380,,kWh,MT-1028,Plant B,T2,14380,kWh,scope_2,production shift
+2025/02/23,2025/03/22,2025-03-24,electricity,12840,,kWh,MT-1029,Distribution Center,T1,12840,kWh,scope_2,late invoice
+25/02/2025,24/03/2025,2025-03-26,electricity,0,,kWh,MT-1030,Remote Office,T4,0,kWh,scope_2,review required
+2025-03-27,2025-04-23,2025-04-25,electricity,16780,,kWh,MT-1031,Warehouse West,T3,16780,kWh,scope_2,normal cycle
+29.03.2025,26.04.2025,2025-04-28,electricity,,7.40,MWh,MT-1032,Plant A,T2,7.40,MWh,scope_2,estimated because meter offline
+2025-04-02,2025-04-29,2025-05-01,electricity,11120,,kWh,MT-1033,Head Office,T1,11120,kWh,scope_2,holiday week
+04/04/2025,01/05/2025,2025-05-03,electricity,15740,,kWh,MT-1034,Plant B,T2,15740,kWh,scope_2,normal cycle
+2025/04/09,2025/05/06,2025-05-08,electricity,13950,,kWh,MT-1035,Distribution Center,T1,13950,kWh,scope_2,meter reconciliation pending
+11.04.2025,08.05.2025,2025-05-10,electricity,9200,,kWh,MT-1036,Remote Office,T4,9200,kWh,scope_2,small site
+2025-05-14,2025-06-10,2025-06-12,electricity,18220,,kWh,MT-1037,Plant A,T2,18220,kWh,scope_2,summer peak
+16/05/2025,13/06/2025,2025-06-15,electricity,,11.85,MWh,MT-1038,Warehouse East,T3,11.85,MWh,scope_2,late estimate
+2025/05/19,2025/06/15,2025-06-17,electricity,13460,,kWh,MT-1039,Head Office,T1,13460,kWh,scope_2,billing period override
+21.05.2025,18.06.2025,2025-06-20,electricity,14830,,kWh,MT-1040,Distribution Center,T1,14830,kWh,scope_2,normal cycle

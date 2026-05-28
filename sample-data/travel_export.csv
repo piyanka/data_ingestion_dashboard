@@ -1,0 +1,41 @@
+travel_date,category,distance,unit,origin_airport,destination_airport,mode,class,employee_id,vendor,scope,notes
+2025-01-04,flight,1200,km,BLR,DEL,air,economy,E1001,Concur,scope_3,domestic business trip
+05/01/2025,hotel,2,night,, ,hotel,standard,E1002,Navan,scope_3,city stay near office
+2025/01/07,taxi,18,km,,,ground,car,E1003,Uber for Business,scope_3,airport transfer
+08.01.2025,train,540,km,BLR,MAA,rail,second,E1004,Concur,scope_3,outstation workshop
+2025-01-10,flight,860,km,DEL,PNQ,air,economy,E1005,Navan,scope_3,same day return
+12/01/2025,hotel,1,night,, ,hotel,deluxe,E1006,Concur,scope_3,conference accommodation
+2025-01-14,taxi,22,km,,,ground,car,E1007,Uber for Business,scope_3,client meeting
+16.01.2025,flight,1460,km,BOM,BLR,air,economy,E1008,Concur,scope_3,project review
+2025/01/18,train,300,km,DEL,AGR,rail,second,E1009,Navan,scope_3,regional site visit
+20/01/2025,hotel,3,night,, ,hotel,standard,E1010,Concur,scope_3,training session
+2025-01-22,taxi,15,km,,,ground,car,E1011,Uber for Business,scope_3,local transport
+24.01.2025,flight,2100,km,HYD,CCU,air,business,E1012,Concur,scope_3,longer route with class upgrade
+2025-01-26,flight,,km,BLR,DEL,air,economy,E1013,Navan,scope_3,airport code only missing distance
+28/01/2025,train,480,km,MAA,BLR,rail,second,E1014,Concur,scope_3,return rail leg
+2025/01/30,hotel,2,night,, ,hotel,standard,E1015,Navan,scope_3,stay for client workshop
+02.02.2025,taxi,11,km,,,ground,car,E1016,Uber for Business,scope_3,short transfer
+2025-02-04,flight,1320,km,DEL,IXC,air,economy,E1017,Concur,scope_3,client site trip
+06/02/2025,hotel,1,night,, ,hotel,standard,E1018,Navan,scope_3,overnight only
+2025/02/08,train,610,km,BLR,HYD,rail,second,E1019,Concur,scope_3,overnight rail
+10.02.2025,taxi,30,km,,,ground,car,E1020,Uber for Business,scope_3,split airport run
+2025-02-12,flight,1750,km,BOM,DEL,air,business,E1021,Concur,scope_3,executive meeting
+14/02/2025,hotel,4,night,, ,hotel,deluxe,E1022,Navan,scope_3,trade show stay
+2025-02-16,flight,640,km,DEL,PNQ,air,economy,E1023,Concur,scope_3,short haul return
+18.02.2025,taxi,8,km,,,ground,car,E1024,Uber for Business,scope_3,hotel to office
+2025-02-20,train,0,km,BLR,BLR,rail,second,E1025,Concur,scope_3,internal shuttle placeholder
+22/02/2025,hotel,2,night,, ,hotel,standard,E1026,Navan,scope_3,client workshop
+2025-02-24,flight,980,km,MAA,DEL,air,economy,E1027,Concur,scope_3,one way itinerary
+26.02.2025,taxi,26,km,,,ground,car,E1028,Uber for Business,scope_3,late night transfer
+2025/02/28,flight,1570,km,CCU,BOM,air,economy,E1029,Navan,scope_3,regional route
+02/03/2025,hotel,1,night,, ,hotel,standard,E1030,Concur,scope_3,one night only
+2025-03-04,taxi,19,km,,,ground,car,E1031,Uber for Business,scope_3,customer site visit
+06.03.2025,train,420,km,DEL,AGR,rail,second,E1032,Concur,scope_3,day trip by train
+2025-03-08,flight,1120,km,BLR,HYD,air,economy,E1033,Navan,scope_3,short route
+10/03/2025,hotel,3,night,, ,hotel,deluxe,E1034,Concur,scope_3,conference week
+2025/03/12,taxi,14,km,,,ground,car,E1035,Uber for Business,scope_3,airport return
+14.03.2025,flight,2040,km,DEL,BLR,air,business,E1036,Concur,scope_3,cross country meeting
+2025-03-16,train,510,km,MAA,HYD,rail,second,E1037,Navan,scope_3,client visit
+18/03/2025,taxi,,km,,,ground,car,E1038,Uber for Business,scope_3,missing distance for validation
+2025-03-20,hotel,2,night,, ,hotel,standard,E1039,Concur,scope_3,short stay
+22.03.2025,flight,760,km,BOM,PNQ,air,economy,E1040,Navan,scope_3,domestic hop

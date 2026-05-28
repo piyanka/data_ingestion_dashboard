@@ -1,0 +1,41 @@
+posting_date,activity_type,quantity,unit,original_quantity,original_unit,plant_code,vendor_code,cost_center,document_no,scope,notes
+2025-01-03,fuel_purchase,1250.00,l,330.21,gal,PLT-01,VND-8831,CC1001,SAP-2025-0001,scope_1,diesel for fleet
+03/01/2025,procurement,340.50,kg,340.50,kg,PLT-02,VND-1144,CC1002,SAP-2025-0002,scope_3,office supplies
+2025/01/07,fuel_purchase,980.00,l,258.91,gal,PLT-01,VND-8831,CC1001,SAP-2025-0003,scope_1,generator refill
+08.01.2025,procurement,112.00,kg,112.00,kg,PLT-03,VND-2290,CC1105,SAP-2025-0004,scope_3,packaging material
+2025-01-11,fuel_purchase,615.00,l,162.43,gal,PLT-01,VND-8831,CC1001,SAP-2025-0005,scope_1,truck fueling
+13/01/2025,procurement,84.00,kg,84.00,kg,PLT-04,VND-3100,CC1201,SAP-2025-0006,scope_3,spare parts
+2025-01-15,fuel_purchase,720.00,l,190.20,gal,PLT-02,VND-8831,CC1002,SAP-2025-0007,scope_1,backup power
+17.01.2025,procurement,52.00,kg,52.00,kg,PLT-03,VND-1188,CC1105,SAP-2025-0008,scope_3,cleaning material
+2025/01/19,fuel_purchase,540.00,l,142.54,gal,PLT-01,VND-8831,CC1001,SAP-2025-0009,scope_1,distribution fleet
+21/01/2025,procurement,168.00,kg,168.00,kg,PLT-05,VND-4477,CC1301,SAP-2025-0010,scope_3,it hardware packaging
+2025-01-22,fuel_purchase,890.00,l,235.10,gal,PLT-02,VND-8831,CC1002,SAP-2025-0011,scope_1,emergency generator
+24.01.2025,procurement,76.00,kg,76.00,kg,PLT-04,VND-2234,CC1201,SAP-2025-0012,scope_3,maintenance consumables
+2025-01-26,fuel_purchase,,l,,gal,PLT-01,VND-8831,CC1001,SAP-2025-0013,scope_1,missing quantity for review
+28/01/2025,procurement,201.00,kg,201.00,kg,PLT-02,VND-1199,CC1002,SAP-2025-0014,scope_3,warehouse purchase
+2025-01-30,fuel_purchase,430.00,l,113.59,gal,PLT-03,VND-8831,CC1105,SAP-2025-0015,scope_1,service vehicle
+02.02.2025,procurement,95.00,kg,95.00,kg,PLT-04,VND-3311,CC1201,SAP-2025-0016,scope_3,stationery restock
+2025/02/04,fuel_purchase,775.00,l,204.75,gal,PLT-01,VND-8831,CC1001,SAP-2025-0017,scope_1,plant transfer
+06/02/2025,procurement,142.00,kg,142.00,kg,PLT-05,VND-5511,CC1301,SAP-2025-0018,scope_3,uniform order
+2025-02-08,fuel_purchase,660.00,l,174.31,gal,PLT-02,VND-8831,CC1002,SAP-2025-0019,scope_1,backup load test
+10.02.2025,procurement,61.00,kg,61.00,kg,PLT-03,VND-2208,CC1105,SAP-2025-0020,scope_3,tooling
+2025-02-12,fuel_purchase,1180.00,l,311.78,gal,PLT-01,VND-8831,CC1001,SAP-2025-0021,scope_1,dispatch hub
+14/02/2025,procurement,104.00,kg,104.00,kg,PLT-04,VND-7744,CC1201,SAP-2025-0022,scope_3,lab consumables
+2025/02/16,fuel_purchase,515.00,l,136.08,gal,PLT-02,VND-8831,CC1002,SAP-2025-0023,scope_1,vehicle refuel
+18.02.2025,procurement,88.00,kg,88.00,kg,PLT-05,VND-6677,CC1301,SAP-2025-0024,scope_3,printed material
+2025-02-20,fuel_purchase,0.00,l,0.00,gal,PLT-01,VND-8831,CC1001,SAP-2025-0025,scope_1,zero row for exception handling
+22/02/2025,procurement,176.00,kg,176.00,kg,PLT-03,VND-8822,CC1105,SAP-2025-0026,scope_3,bulk supplies
+2025-02-24,fuel_purchase,940.00,l,248.31,gal,PLT-02,VND-8831,CC1002,SAP-2025-0027,scope_1,utility backup fuel
+26.02.2025,procurement,69.00,kg,69.00,kg,PLT-04,VND-4499,CC1201,SAP-2025-0028,scope_3,repair parts
+2025/02/28,fuel_purchase,1025.00,l,270.71,gal,PLT-01,VND-8831,CC1001,SAP-2025-0029,scope_1,month end fuel
+02/03/2025,procurement,133.00,kg,133.00,kg,PLT-05,VND-3388,CC1301,SAP-2025-0030,scope_3,office electronics packing
+2025-03-04,fuel_purchase,680.00,l,179.61,gal,PLT-03,VND-8831,CC1105,SAP-2025-0031,scope_1,service run
+06.03.2025,procurement,91.00,kg,91.00,kg,PLT-04,VND-2288,CC1201,SAP-2025-0032,scope_3,safety gear
+2025-03-08,fuel_purchase,745.00,l,196.78,gal,PLT-01,VND-8831,CC1001,SAP-2025-0033,scope_1,depot transfer
+10/03/2025,procurement,58.00,kg,58.00,kg,PLT-02,VND-7711,CC1002,SAP-2025-0034,scope_3,hardware order
+2025/03/12,fuel_purchase,560.00,l,147.95,gal,PLT-05,VND-8831,CC1301,SAP-2025-0035,scope_1,night shift fueling
+14.03.2025,procurement,147.00,kg,147.00,kg,PLT-03,VND-6633,CC1105,SAP-2025-0036,scope_3,consumables
+2025-03-16,fuel_purchase,890.00,l,235.10,gal,PLT-01,VND-8831,CC1001,SAP-2025-0037,scope_1,distribution run
+18/03/2025,procurement,126.00,kg,126.00,kg,PLT-04,VND-4422,CC1201,SAP-2025-0038,scope_3,packaging stock
+2025-03-20,fuel_purchase,635.00,l,167.78,gal,PLT-02,VND-8831,CC1002,SAP-2025-0039,scope_1,backup generator
+22.03.2025,procurement,77.00,kg,77.00,kg,PLT-05,VND-5519,CC1301,SAP-2025-0040,scope_3,inventory refresh

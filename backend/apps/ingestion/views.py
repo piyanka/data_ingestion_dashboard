@@ -1,0 +1,86 @@
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.utils import timezone
+
+from apps.core.models import AuditLog
+
+from .models import EmissionRecord, NormalizedActivity, RawRecord, SourceFile, ValidationIssue
+from .serializers import (
+    EmissionRecordSerializer,
+    NormalizedActivitySerializer,
+    RawRecordSerializer,
+    SourceFileSerializer,
+    SourceFileUploadSerializer,
+    ValidationIssueSerializer,
+)
+from .services.file_ingestion import ingest_source_file
+
+
+class SourceFileViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = SourceFile.objects.select_related("organization").all()
+    serializer_class = SourceFileSerializer
+
+
+class SourceFileUploadAPIView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, *args, **kwargs):
+        serializer = SourceFileUploadSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        source_file = serializer.save()
+        ingest_source_file(source_file)
+        source_file.refresh_from_db()
+        output = SourceFileSerializer(source_file).data
+        return Response(output, status=status.HTTP_201_CREATED)
+
+
+class RawRecordViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = RawRecord.objects.select_related("source_file").all()
+    serializer_class = RawRecordSerializer
+
+
+class NormalizedActivityViewSet(viewsets.ModelViewSet):
+    queryset = NormalizedActivity.objects.select_related("organization", "raw_record").all()
+    serializer_class = NormalizedActivitySerializer
+
+    @action(detail=True, methods=["post"])
+    def review(self, request, pk=None):
+        activity = self.get_object()
+        old_values = {
+            "status": activity.status,
+            "review_notes": activity.review_notes,
+            "reviewed_by_id": activity.reviewed_by_id,
+            "reviewed_at": activity.reviewed_at.isoformat() if activity.reviewed_at else None,
+        }
+        activity.status = request.data.get("status", NormalizedActivity.Status.APPROVED)
+        activity.review_notes = request.data.get("review_notes", "")
+        activity.reviewed_by = request.user if request.user.is_authenticated else None
+        activity.reviewed_at = timezone.now()
+        activity.save(update_fields=["status", "review_notes", "reviewed_by", "reviewed_at", "updated_at"])
+        AuditLog.objects.create(
+            entity_type="NormalizedActivity",
+            entity_id=str(activity.id),
+            action_type="review",
+            changed_by=request.user if request.user.is_authenticated else None,
+            old_values=old_values,
+            new_values={
+                "status": activity.status,
+                "review_notes": activity.review_notes,
+                "reviewed_by_id": activity.reviewed_by_id,
+                "reviewed_at": activity.reviewed_at.isoformat() if activity.reviewed_at else None,
+            },
+        )
+        return Response(self.get_serializer(activity).data)
+
+
+class EmissionRecordViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = EmissionRecord.objects.select_related("activity").all()
+    serializer_class = EmissionRecordSerializer
+
+
+class ValidationIssueViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ValidationIssue.objects.select_related("activity", "raw_record").all()
+    serializer_class = ValidationIssueSerializer
