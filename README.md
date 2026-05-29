@@ -105,9 +105,10 @@ The backend service build flow is:
 
 ```bash
 ./build.sh
-python manage.py migrate
 gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
 ```
+
+Note: the free Render tier does not support `preDeployCommand`, so migrations run inside `backend/build.sh`.
 
 ### Frontend on Render
 
