@@ -57,13 +57,22 @@ export DJANGO_ALLOWED_HOSTS="localhost,127.0.0.1"
 export CORS_ALLOWED_ORIGINS="http://localhost:5173,http://127.0.0.1:5173"
 ```
 
-Run migrations and start the server:
+Run migrations, bootstrap the admin user if needed, and start the server:
 
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver 127.0.0.1:8000
+```
+
+If you want a local admin bootstrap that behaves like production, set these first:
+
+```bash
+export DJANGO_ADMIN_USERNAME="admin"
+export DJANGO_ADMIN_EMAIL="admin@example.com"
+export DJANGO_ADMIN_PASSWORD="change-me"
+python manage.py bootstrap_admin
 ```
 
 ### 2) Frontend
@@ -130,6 +139,14 @@ Important: the frontend will fail in production if `VITE_API_BASE_URL` is not se
 5. Create a new Static Site for `frontend/`.
 6. Set `VITE_API_BASE_URL` to the deployed backend URL.
 7. Build and deploy the frontend static site.
+
+To avoid Render shell access, add these backend service environment variables in Render:
+
+- `DJANGO_ADMIN_USERNAME`
+- `DJANGO_ADMIN_EMAIL`
+- `DJANGO_ADMIN_PASSWORD`
+
+The backend build script runs `python manage.py bootstrap_admin` after migrations, so the admin user is created or refreshed automatically during deploy.
 
 ## Why Production Can Fail
 
