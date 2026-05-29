@@ -6,7 +6,7 @@ from apps.ingestion.models import NormalizedActivity, ValidationIssue
 class AnalystReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = NormalizedActivity
-        fields = ["id", "status", "review_notes", "reviewed_by", "reviewed_at"]
+        fields = ["id", "raw_record", "status", "review_notes", "reviewed_by", "reviewed_at"]
         read_only_fields = ["reviewed_by", "reviewed_at"]
 
 
@@ -17,6 +17,7 @@ class ReviewQueueItemSerializer(serializers.ModelSerializer):
         model = NormalizedActivity
         fields = [
             "id",
+            "raw_record",
             "source_type",
             "activity_type",
             "activity_date",

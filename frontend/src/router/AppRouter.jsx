@@ -13,6 +13,8 @@ import SourceFilesPageRoute from "../pages/source_files";
 import UploadPageRoute from "../pages/upload";
 import ValidationPageRoute from "../pages/validation";
 
+const REVIEW_PAGE_SIZE = 8;
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -266,20 +268,53 @@ function DashboardApp() {
     setError("");
     setMessage("");
     try {
-      const finalStatus = status === "approved" ? "locked" : status;
+      const currentIndex = reviewQueue.findIndex((item) => String(item.id) === String(activityId));
+      const nextQueueIndex = currentIndex >= 0 ? currentIndex + 1 : 0;
+      const nextRecord = reviewQueue[nextQueueIndex] || null;
+      const nextPage = nextRecord ? Math.floor(nextQueueIndex / REVIEW_PAGE_SIZE) + 1 : 1;
+
       const updated = await requestJson(`/activities/${activityId}/review/`, {
         method: "POST",
         body: JSON.stringify({
-          status: finalStatus,
+          status,
           review_notes: notes,
         }),
       });
       setMessage(`Activity ${updated.id} marked as ${reviewStatusLabels[updated.status] || updated.status}.`);
-      setReviewNotes("");
-      setSelectedRecord(updated);
       await loadDashboard(true);
+      if (nextRecord) {
+        setSelectedRecord(nextRecord);
+        setReviewNotes(nextRecord.review_notes || "");
+        setReviewPage(nextPage);
+      } else {
+        setSelectedRecord(null);
+        setReviewNotes("");
+        setReviewPage(1);
+      }
+      return updated;
     } catch (err) {
       setError(err.message || "Unable to update review status.");
+      throw err;
+    }
+  }
+
+  function openValidationIssue(issueId) {
+    const issueIndex = validationIssues.findIndex((issue) => String(issue.id) === String(issueId));
+    const selectedIssue = validationIssues.find((issue) => String(issue.id) === String(issueId)) || null;
+    if (issueIndex >= 0) {
+      setValidationPage(Math.floor(issueIndex / 8) + 1);
+    }
+    if (selectedIssue) {
+      setSelectedValidationIssueId(selectedIssue.id);
+    }
+    navigate("/validation");
+  }
+
+  function openValidationIssuesForActivity(activityId) {
+    const matchingIssues = validationIssues.filter((issue) => String(issue.activity) === String(activityId));
+    const firstIssue = matchingIssues[0] || null;
+    if (firstIssue) {
+      openValidationIssue(firstIssue.id);
     }
   }
 
@@ -428,6 +463,7 @@ function DashboardApp() {
             selectedIssues={selectedIssues}
             page={reviewPage}
             setPage={setReviewPage}
+            onOpenIssue={openValidationIssue}
           />
         ) : null}
 
@@ -458,6 +494,9 @@ function DashboardApp() {
             selectedValidationIssueId={selectedValidationIssueId}
             setSelectedValidationIssueId={setSelectedValidationIssueId}
             handleReview={handleReview}
+            onDone={() => {
+              navigate("/review");
+            }}
           />
         ) : null}
 

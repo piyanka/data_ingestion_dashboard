@@ -62,7 +62,7 @@ export function CompactQueueList({ reviewQueue, selectedRecord, setSelectedRecor
         reviewQueue.map((activity) => (
           <button
             key={activity.id}
-            className={`queue-item ${selectedRecord?.id === activity.id ? "selected" : ""}`}
+            className={`queue-item ${activity.issue_count > 0 ? "issue-linked" : ""} ${selectedRecord?.id === activity.id ? "selected" : ""}`}
             type="button"
             onClick={() => {
               if (setSelectedRecord) setSelectedRecord(activity);
@@ -71,7 +71,10 @@ export function CompactQueueList({ reviewQueue, selectedRecord, setSelectedRecor
           >
             <div>
               <strong>{activity.activity_type}</strong>
-              <span>{formatDate(activity.activity_date) || "No activity date"}</span>
+              <span className="queue-meta-inline">
+                <span>{formatDate(activity.activity_date) || "No activity date"}</span>
+                {activity.issue_count > 0 ? <span className="queue-issue-badge">{activity.issue_count} issue{activity.issue_count === 1 ? "" : "s"}</span> : null}
+              </span>
             </div>
             <div className="queue-meta">
               <span>{sourceLabels[activity.source_type] || activity.source_type}</span>
@@ -93,14 +96,16 @@ export function CompactIssueList({
   onSelectIssue,
   sourceFiles = [],
   rawRecords = [],
+  titleOnly = false,
+  maxItems = 8,
 }) {
   if (!validationIssues || validationIssues.length === 0) {
     return <div className="empty-state">No validation issues have been recorded yet.</div>;
   }
 
   return (
-    <div className="compact-list">
-      {validationIssues.slice(0, 8).map((issue) => {
+    <div className={`compact-list ${titleOnly ? "compact-list-inline" : ""}`}>
+      {validationIssues.slice(0, maxItems).map((issue) => {
         const activity = activities.find((item) => String(item.id) === String(issue.activity));
         const rawRecord = rawRecords.find((item) => String(item.id) === String(issue.raw_record));
         const sourceFile = rawRecord ? sourceFiles.find((file) => String(file.id) === String(rawRecord.source_file)) : null;
@@ -109,25 +114,28 @@ export function CompactIssueList({
           <button
             key={issue.id}
             type="button"
-            className={`issue-card severity-${issue.severity} ${String(selectedIssueId) === String(issue.id) ? "selected" : ""}`}
+            className={`issue-card severity-${issue.severity} ${titleOnly ? "issue-chip" : ""} ${String(selectedIssueId) === String(issue.id) ? "selected" : ""}`}
             onClick={() => onSelectIssue && onSelectIssue(issue.id)}
           >
             <strong>{issueTypeLabel}</strong>
-            {/* <span>{issue.message}</span> */}
-            <span>
-              {sourceFile
-                ? `${sourceFile.filename} • row ${rawRecord?.row_number || issue.raw_record_row_number || "-"}`
-                : issue.source_file_filename
-                  ? `${issue.source_file_filename} • row ${issue.raw_record_row_number || "-"}`
-                  : issue.raw_record_row_number
-                    ? `Row ${issue.raw_record_row_number}`
-                    : "Raw record only"}
-            </span>
-            <small>
-              {activity
-                ? `${activity.activity_type} • ${sourceLabels[activity.source_type] || activity.source_type}`
-                : `Activity ${issue.activity || "raw record only"}`}
-            </small>
+            {titleOnly ? null : (
+              <>
+                <span>
+                  {sourceFile
+                    ? `${sourceFile.filename} • row ${rawRecord?.row_number || issue.raw_record_row_number || "-"}`
+                    : issue.source_file_filename
+                      ? `${issue.source_file_filename} • row ${issue.raw_record_row_number || "-"}`
+                      : issue.raw_record_row_number
+                        ? `Row ${issue.raw_record_row_number}`
+                        : "Raw record only"}
+                </span>
+                <small>
+                  {activity
+                    ? `${activity.activity_type} • ${sourceLabels[activity.source_type] || activity.source_type}`
+                    : `Activity ${issue.activity || "raw record only"}`}
+                </small>
+              </>
+            )}
           </button>
         );
       })}
@@ -203,7 +211,7 @@ export function ValidationIssueDetail({ issue, activities, rawRecords, sourceFil
           </div>
           <div className="button-row">
             <button className="primary-btn" type="button" onClick={onApprove}>
-              Mark approved & lock
+              Mark approved
             </button>
             <button className="danger-btn" type="button" onClick={onReject}>
               Mark rejected

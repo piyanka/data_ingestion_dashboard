@@ -543,6 +543,17 @@ textarea {
   background: rgba(223, 241, 228, 0.92);
 }
 
+.queue-item.issue-linked {
+  border-color: rgba(176, 131, 27, 0.22);
+  background: linear-gradient(180deg, rgba(255, 244, 231, 0.94), rgba(248, 233, 209, 0.9));
+  box-shadow: inset 3px 0 0 rgba(176, 131, 27, 0.34);
+}
+
+.queue-item.issue-linked.selected {
+  border-color: rgba(176, 131, 27, 0.34);
+  background: linear-gradient(180deg, rgba(245, 229, 196, 0.96), rgba(239, 219, 179, 0.92));
+}
+
 .queue-item strong {
   display: block;
   margin-bottom: 6px;
@@ -554,10 +565,56 @@ textarea {
   font-size: 14px;
 }
 
+.queue-meta-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
 .queue-meta {
   display: flex;
   justify-content: space-between;
   gap: 12px;
+}
+
+.queue-issue-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: rgba(176, 131, 27, 0.14);
+  color: #7c5a11;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+button.issue-card.issue-chip {
+  width: fit-content;
+  max-width: 100%;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(247, 239, 219, 0.95);
+  border-color: rgba(176, 131, 27, 0.22);
+  color: #8a6512;
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 231, 0.75);
+}
+
+button.issue-card.issue-chip:hover {
+  background: rgba(242, 230, 199, 0.98);
+}
+
+button.issue-card.issue-chip.selected {
+  background: rgba(239, 221, 182, 0.98);
+  box-shadow: inset 0 0 0 1px rgba(176, 131, 27, 0.2);
+}
+
+button.issue-card.issue-chip strong,
+button.issue-card.issue-chip span,
+button.issue-card.issue-chip small {
+  color: inherit;
 }
 
 .detail-row {
@@ -757,6 +814,13 @@ button.issue-card.selected {
 .empty-state,
 .table-empty {
   color: var(--muted);
+}
+
+.compact-list-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
 }
 
 .issue-card small {
@@ -2077,4 +2141,3 @@ th {
   color: var(--muted);
 
 }
-

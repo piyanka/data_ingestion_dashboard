@@ -12,6 +12,7 @@ function ValidationPage({
   selectedValidationIssueId,
   setSelectedValidationIssueId,
   handleReview,
+  onDone,
 }) {
   const pageSize = 8;
   const totalPages = Math.max(1, Math.ceil(validationIssues.length / pageSize));
@@ -59,14 +60,40 @@ function ValidationPage({
           </div>
         </div>
         {selectedValidationIssue ? (
-          <ValidationIssueDetail
-            issue={selectedValidationIssue}
-            activities={activities}
-            rawRecords={rawRecords}
-            sourceFiles={sourceFiles}
-            onReject={() => selectedValidationIssue.activity && handleReview(selectedValidationIssue.activity, "rejected", "Rejected from validation screen")}
-            onApprove={() => selectedValidationIssue.activity && handleReview(selectedValidationIssue.activity, "approved", "Approved from validation screen")}
-          />
+          <>
+            <ValidationIssueDetail
+              issue={selectedValidationIssue}
+              activities={activities}
+              rawRecords={rawRecords}
+              sourceFiles={sourceFiles}
+              onReject={async () => {
+                if (!selectedValidationIssue.activity) return;
+                await handleReview(selectedValidationIssue.activity, "rejected", "Rejected from validation screen");
+                if (onDone) onDone();
+              }}
+              onApprove={async () => {
+                if (!selectedValidationIssue.activity) return;
+                await handleReview(selectedValidationIssue.activity, "approved", "Approved from validation screen");
+                if (onDone) onDone();
+              }}
+            />
+            {validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity)).length > 1 ? (
+              <>
+                <div className="panel-divider" />
+                <p className="panel-title">All issues on this row</p>
+                <CompactIssueList
+                  validationIssues={validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity))}
+                  activities={activities}
+                  selectedIssueId={selectedValidationIssueId}
+                  onSelectIssue={setSelectedValidationIssueId}
+                  sourceFiles={sourceFiles}
+                  rawRecords={rawRecords}
+                  titleOnly
+                  maxItems={validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity)).length}
+                />
+              </>
+            ) : null}
+          </>
         ) : (
           <div className="empty-state">Select a suspicious row to inspect the normalized activity and raw source data.</div>
         )}
