@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "replace-me-for-deployment"
 DEBUG = True
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["https://data-ingestion-dashboard.onrender.com"]
 
 INSTALLED_APPS = [
     "corsheaders",
