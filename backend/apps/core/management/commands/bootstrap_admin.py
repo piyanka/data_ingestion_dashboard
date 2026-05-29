@@ -1,7 +1,8 @@
 import os
 
-from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
+
+from apps.core.bootstrap import bootstrap_admin_user
 
 
 class Command(BaseCommand):
@@ -25,11 +26,20 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        username = options["username"] or self._env("DJANGO_ADMIN_USERNAME")
-        email = options["email"] or self._env("DJANGO_ADMIN_EMAIL")
-        password = options["password"] or self._env("DJANGO_ADMIN_PASSWORD")
+        username = options["username"]
+        email = options["email"]
+        password = options["password"]
 
-        if not username or not password:
+        if username:
+            os.environ["DJANGO_ADMIN_USERNAME"] = username
+        if email is not None:
+            os.environ["DJANGO_ADMIN_EMAIL"] = email
+        if password:
+            os.environ["DJANGO_ADMIN_PASSWORD"] = password
+
+        result = bootstrap_admin_user()
+
+        if result is None:
             self.stdout.write(
                 self.style.WARNING(
                     "Skipping admin bootstrap because DJANGO_ADMIN_USERNAME or "
@@ -38,55 +48,8 @@ class Command(BaseCommand):
             )
             return
 
-        User = get_user_model()
-        user, created = User.objects.get_or_create(
-            username=username,
-            defaults={
-                "email": email or "",
-                "is_staff": True,
-                "is_superuser": True,
-            },
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Admin bootstrap completed successfully ({result})."
+            )
         )
-
-        changed_fields = []
-
-        if email is not None and user.email != email:
-            user.email = email
-            changed_fields.append("email")
-
-        if not user.is_staff:
-            user.is_staff = True
-            changed_fields.append("is_staff")
-
-        if not user.is_superuser:
-            user.is_superuser = True
-            changed_fields.append("is_superuser")
-
-        user.set_password(password)
-        changed_fields.append("password")
-        user.save()
-
-        if created:
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f"Created admin user '{username}' and set password."
-                )
-            )
-            return
-
-        if changed_fields:
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f"Updated admin user '{username}' ({', '.join(changed_fields)})."
-                )
-            )
-        else:
-            self.stdout.write(
-                self.style.SUCCESS(f"Admin user '{username}' is already up to date.")
-            )
-
-    @staticmethod
-    def _env(name):
-        value = os.getenv(name, "").strip()
-        return value or None
-
