@@ -4,6 +4,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils import timezone
+from django.db import transaction
 
 from apps.core.models import AuditLog
 
@@ -14,14 +15,70 @@ from .serializers import (
     RawRecordSerializer,
     SourceFileSerializer,
     SourceFileUploadSerializer,
+    SourceFileUpdateSerializer,
     ValidationIssueSerializer,
 )
 from .services.file_ingestion import ingest_source_file
 
 
-class SourceFileViewSet(viewsets.ReadOnlyModelViewSet):
+class SourceFileViewSet(viewsets.ModelViewSet):
     queryset = SourceFile.objects.select_related("organization").all()
     serializer_class = SourceFileSerializer
+    http_method_names = ["get", "put", "patch", "delete", "head", "options"]
+
+    def get_serializer_class(self):
+        if self.action in {"update", "partial_update"}:
+            return SourceFileUpdateSerializer
+        return SourceFileSerializer
+
+    def perform_update(self, serializer):
+        instance = serializer.instance
+        old_values = {
+            "organization_id": instance.organization_id,
+            "organization_name": instance.organization.name,
+            "source_type": instance.source_type,
+            "filename": instance.filename,
+            "processing_status": instance.processing_status,
+        }
+        with transaction.atomic():
+            updated = serializer.save()
+            AuditLog.objects.create(
+                entity_type="SourceFile",
+                entity_id=str(updated.id),
+                action_type="update",
+                changed_by=self.request.user if self.request.user.is_authenticated else None,
+                old_values=old_values,
+                new_values={
+                    "organization_id": updated.organization_id,
+                    "organization_name": updated.organization.name,
+                    "source_type": updated.source_type,
+                    "filename": updated.filename,
+                    "processing_status": updated.processing_status,
+                },
+            )
+
+    def perform_destroy(self, instance):
+        old_values = {
+            "organization_id": instance.organization_id,
+            "organization_name": instance.organization.name,
+            "source_type": instance.source_type,
+            "filename": instance.filename,
+            "processing_status": instance.processing_status,
+            "total_rows": instance.total_rows,
+            "successful_rows": instance.successful_rows,
+            "failed_rows": instance.failed_rows,
+            "checksum_sha256": instance.checksum_sha256,
+        }
+        with transaction.atomic():
+            AuditLog.objects.create(
+                entity_type="SourceFile",
+                entity_id=str(instance.id),
+                action_type="delete",
+                changed_by=self.request.user if self.request.user.is_authenticated else None,
+                old_values=old_values,
+                new_values={},
+            )
+            instance.delete()
 
 
 class SourceFileUploadAPIView(APIView):

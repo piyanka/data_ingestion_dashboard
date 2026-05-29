@@ -36,6 +36,19 @@ export async function uploadSourceFile(form) {
   });
 }
 
+export async function updateSourceFile(id, payload) {
+  return requestJson(`/source-files/${id}/`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteSourceFile(id) {
+  return requestJson(`/source-files/${id}/`, {
+    method: "DELETE",
+  });
+}
+
 function safeParse(text) {
   try {
     return JSON.parse(text);
