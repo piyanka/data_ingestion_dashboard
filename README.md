@@ -102,6 +102,8 @@ The frontend will usually run on `http://127.0.0.1:5173` and the backend on `htt
 
 This repository includes a Render Blueprint at [render.yaml](/Users/priyanka/Documents/Projects/breathe_esg/render.yaml) and a backend build script at [backend/build.sh](/Users/priyanka/Documents/Projects/breathe_esg/backend/build.sh).
 
+The repo root also includes [.python-version](/Users/priyanka/Documents/Projects/breathe_esg/.python-version) so Render uses Python 3.12 instead of the default 3.14 runtime. Django 4.2 officially supports Python 3.12, so this avoids the admin and template errors you were seeing.
+
 Render settings used by the Blueprint:
 
 - `DATABASE_URL` from the managed Render Postgres database
