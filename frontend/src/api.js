@@ -1,4 +1,12 @@
-export const apiBase = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api/v1";
+const configuredApiBase = import.meta.env.VITE_API_BASE_URL;
+
+export const apiBase = configuredApiBase || "http://127.0.0.1:8000/api/v1";
+
+if (import.meta.env.PROD && !configuredApiBase) {
+  console.warn(
+    "VITE_API_BASE_URL is not set. The production build will try localhost and the API calls will fail."
+  );
+}
 
 export async function requestJson(path, options = {}) {
   const response = await fetch(`${apiBase}${path}`, {
