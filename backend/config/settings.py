@@ -4,7 +4,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "replace-me-for-deployment"
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ["https://data-ingestion-dashboard.onrender.com"]
 
 INSTALLED_APPS = [
@@ -80,6 +80,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
     "https://data-ingestion-dashboard-1.onrender.com",
 ]
 
