@@ -336,6 +336,17 @@ function DashboardApp() {
     return validationIssues.filter((issue) => String(issue.activity) === String(selectedRecord.id));
   }, [selectedRecord, validationIssues]);
 
+  useEffect(() => {
+    if (!message && !error) return undefined;
+
+    const timeoutId = window.setTimeout(() => {
+      setMessage("");
+      setError("");
+    }, 4000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [message, error]);
+
   const routeLabel = routeLabels[route] || "Activity detail";
 
   return (
