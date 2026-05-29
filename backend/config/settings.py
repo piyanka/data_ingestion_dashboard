@@ -113,6 +113,11 @@ CORS_ALLOWED_ORIGINS = _csv_env(
     "http://localhost:5173,http://127.0.0.1:5173",
 )
 
+CORS_ALLOWED_ORIGIN_REGEXES = _csv_env(
+    "CORS_ALLOWED_ORIGIN_REGEXES",
+    r"^https://.*\.onrender\.com$",
+)
+
 CORS_ALLOW_CREDENTIALS = False
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
