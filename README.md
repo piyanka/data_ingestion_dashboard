@@ -1,4 +1,8 @@
-# Breathe ESG Prototype
+# Breathe ESG 
+
+<img width="2934" height="1678" alt="image" src="https://github.com/user-attachments/assets/aec5ca51-9ddb-4f22-bada-f51ecc8d3570" />
+
+
 
 A realistic ESG data ingestion prototype for the Breathe ESG assignment.
 
