@@ -1,31 +1,39 @@
 import React from "react";
 
-function UploadPage({ organizations, uploadForm, setUploadForm, handleUpload, uploading }) {
+function UploadPage({
+  organizations,
+  uploadForm,
+  setUploadForm,
+  handleUpload,
+  uploading,
+}) {
   const sourceOptions = [
-    { value: "sap", label: "SAP fuel / procurement", detail: "Mixed units, ERP codes, inconsistent dates." },
-    { value: "utility", label: "Utility electricity", detail: "Billing periods, kWh / MWh, tariff data." },
-    { value: "travel", label: "Corporate travel", detail: "Flights, hotels, taxis, trains, sparse rows." },
+    {
+      value: "sap",
+      label: "SAP fuel / procurement",
+      detail: "Mixed units, ERP codes, inconsistent dates.",
+    },
+    {
+      value: "utility",
+      label: "Utility electricity",
+      detail: "Billing periods, kWh / MWh, tariff data.",
+    },
+    {
+      value: "travel",
+      label: "Corporate travel",
+      detail: "Flights, hotels, taxis, trains, sparse rows.",
+    },
   ];
 
   return (
-    <section className="panel upload-panel" >
+    <section className="panel upload-panel">
       <div className="upload-title">
         <div>
-          <p className="panel-title upload-font" style={{font: 27}}>Upload dashboard</p>
-          {/* <h2>Bring in a source export</h2> */}
+          <p className="panel-title upload-font" style={{ font: 27 }}>
+            Upload dashboard
+          </p>
         </div>
-        {/* <span className="badge">CSV / XLSX</span> */}
       </div>
-
-      {/* <p className="section-copy">
-        This screen is for analysts or data ops users who receive files from SAP, utility portals,
-        or travel platforms and need to load them into the pipeline.
-      </p> */}
-
-      {/* <div className="helper-banner">
-        <strong>Tip:</strong>
-        <span>Create an organization in Django admin first. Then choose the source lane below so uploads stay tied to the correct ingestion path.</span>
-      </div> */}
 
       <form className="form-grid" onSubmit={handleUpload}>
         <label>
@@ -33,7 +41,10 @@ function UploadPage({ organizations, uploadForm, setUploadForm, handleUpload, up
           <select
             value={uploadForm.organization_id}
             onChange={(event) =>
-              setUploadForm((current) => ({ ...current, organization_id: event.target.value }))
+              setUploadForm((current) => ({
+                ...current,
+                organization_id: event.target.value,
+              }))
             }
           >
             <option value="">Select organization</option>
@@ -75,7 +86,10 @@ function UploadPage({ organizations, uploadForm, setUploadForm, handleUpload, up
             type="text"
             value={uploadForm.filename}
             onChange={(event) =>
-              setUploadForm((current) => ({ ...current, filename: event.target.value }))
+              setUploadForm((current) => ({
+                ...current,
+                filename: event.target.value,
+              }))
             }
             placeholder="upload files"
           />
@@ -90,7 +104,8 @@ function UploadPage({ organizations, uploadForm, setUploadForm, handleUpload, up
               setUploadForm((current) => ({
                 ...current,
                 file: event.target.files?.[0] || null,
-                filename: current.filename || event.target.files?.[0]?.name || "",
+                filename:
+                  current.filename || event.target.files?.[0]?.name || "",
               }))
             }
           />
@@ -100,40 +115,6 @@ function UploadPage({ organizations, uploadForm, setUploadForm, handleUpload, up
           {uploading ? "Uploading..." : "Upload and process"}
         </button>
       </form>
-
-      {/* <div className="upload-hint-grid">
-        <div className="info-card">
-          <strong>Raw rows preserved</strong>
-          <span>Every upload creates raw records before normalization, so nothing gets lost.</span>
-        </div>
-        <div className="info-card">
-          <strong>Validation first</strong>
-          <span>Suspicious rows are flagged immediately so analysts can review them.</span>
-        </div>
-        <div className="info-card">
-          <strong>Separate emissions</strong>
-          <span>Emissions are derived records and stay separate from the operational facts.</span>
-        </div>
-      </div> */}
-
-      {/* <div className="flow-steps">
-        <div className="flow-step">
-          <strong>1. Upload</strong>
-          <span>Choose a lane, attach the file, and upload.</span>
-        </div>
-        <div className="flow-step">
-          <strong>2. Normalize</strong>
-          <span>Raw rows become canonical activities with scope and unit handling.</span>
-        </div>
-        <div className="flow-step">
-          <strong>3. Review</strong>
-          <span>Analysts inspect the raw row, validation issues, and approve or reject.</span>
-        </div>
-        <div className="flow-step">
-          <strong>4. Audit</strong>
-          <span>Locked rows and review actions appear in the audit trail.</span>
-        </div>
-      </div> */}
     </section>
   );
 }

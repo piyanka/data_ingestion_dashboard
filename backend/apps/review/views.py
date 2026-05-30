@@ -13,10 +13,24 @@ class ReviewQueueViewSet(viewsets.ReadOnlyModelViewSet):
     )
     serializer_class = ReviewQueueItemSerializer
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        organization_id = self.request.query_params.get("organization_id")
+        if organization_id:
+            queryset = queryset.filter(organization_id=organization_id)
+        return queryset
+
 
 class AnalystReviewViewSet(viewsets.ModelViewSet):
     queryset = NormalizedActivity.objects.all()
     serializer_class = AnalystReviewSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        organization_id = self.request.query_params.get("organization_id")
+        if organization_id:
+            queryset = queryset.filter(organization_id=organization_id)
+        return queryset
 
     def perform_update(self, serializer):
         instance = serializer.instance

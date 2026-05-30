@@ -48,7 +48,7 @@ function ReviewPage({
       <article className="panel">
         <div className="panel-header">
           <div>
-            {/* <p className="panel-title">Review dashboard</p> */}
+        
             <h2 style={{color: "#2f6d4a"}}>Pending Analyst Review</h2>
           </div>
           <span className="badge">{reviewQueue.length} pending</span>

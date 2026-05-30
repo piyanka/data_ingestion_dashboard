@@ -5,12 +5,12 @@
 This document explains:
 
 * what real-world source formats I researched
-* what I learned from researching them
-* why I chose specific ingestion formats
-* how I designed the sample datasets
-* what limitations would exist in a real production system
+* what I learned from them
+* why specific ingestion formats were chosen
+* how sample datasets were designed
+* limitations in a production system
 
-The goal was to realistically simulate the messy operational data that ESG teams deal with during enterprise onboarding.
+The goal was to simulate the messy, real-world operational data typically encountered during ESG onboarding in enterprises.
 
 ---
 
@@ -18,168 +18,128 @@ The goal was to realistically simulate the messy operational data that ESG teams
 
 ## What I Researched
 
-I researched how SAP operational data is usually shared in large companies.
+I researched how SAP operational data is typically exposed in enterprise systems.
 
-I found that SAP data can come through:
+Common formats include:
 
-* flat-file ERP reports
 * IDoc integrations
 * OData APIs
 * BAPI integrations
+* flat-file ERP exports
 
-For this prototype, I chose to model SAP ingestion using CSV/XLSX files that represent realistic flat-file ERP exports because this closely matches how ESG onboarding often begins in practice — through manually exported operational reports rather than direct system integrations.
+Links: https://www.techtarget.com/searchsap/definition/IDoc, 
+       https://ghgptechassistance.zendesk.com/hc/en-us/articles/47397108734740-Cross-sector-Emission-Factors, 
+       https://help.sap.com/docs/SAP_LUMIRA/4f58d91f03e441b68d3187e94be27df2/596bceb9b50443ab945405328f8ed1c7.html?locale=en-US&q=csv+export
 
-While researching SAP exports, I observed that the data is often operationally messy and difficult to work with directly. Typical exports may contain:
-
-* short ERP-style column names
-* plant/vendor codes
-* mixed date formats
-* mixed units
-* operational terminology that is not easy to understand immediately
-
-Examples:
-
-* `WERKS` → plant code
-* `MEINS` → unit
-* `MENGE` → quantity
-
-I also learned that many SAP fields are not meaningful on their own and often require lookup tables or business context to interpret correctly.
-
-For example:
-
-a plant code like PLT1001 may require a lookup table to identify which facility or region it belongs to
-a material code may require mapping to determine whether it represents diesel, gasoline, or another procurement category
-vendor IDs may need separate reference data to understand supplier details
-
-This was important for the prototype because ESG normalization often depends not only on the raw values themselves, but also on contextual business mappings that exist outside the exported file.
+For this prototype, I modeled SAP ingestion using **CSV/XLSX exports**, since ESG onboarding often begins with manually exported ERP reports rather than direct system integrations.
 
 ---
 
 ## What I Learned
 
-One important thing I learned is that SAP data is usually not clean or analyst-friendly.
+SAP exports are typically:
 
-Different teams and regions may export data differently. Some exports may even contain German column names or company-specific abbreviations.
+* operational and non-analyst friendly
+* filled with abbreviations and ERP-specific codes
+* inconsistent across teams and regions
+* dependent on external lookup tables for meaning
 
-I also learned that ESG onboarding often starts with manually exported reports instead of direct ERP integrations because integrations take time and security approvals.
+Examples:
 
-Another thing I observed during research is that SAP exports often contain a very large amount of operational information, much of which is not directly useful for ESG calculations.
+* `WERKS` → plant code
+* `MEINS` → unit of measure
+* `MENGE` → quantity
 
-Because of this, one important design decision was deciding:
+Many fields are not meaningful in isolation and require business context to interpret.
 
-* what subset of SAP data should actually be ingested
-* which fields are relevant for emissions workflows
-* which operational details should be ignored for the prototype
+For example:
 
-Instead of attempting to ingest entire ERP exports, I intentionally limited the prototype to a smaller subset focused on:
+* plant codes map to facility metadata
+* material codes require classification mapping
+* vendor IDs depend on external reference datasets
+
+This makes ESG normalization heavily dependent on **external business mappings**, not just raw data.
+
+---
+
+## Design Decisions
+
+I intentionally limited SAP ingestion scope to:
 
 * fuel-related operational records
-* procurement activities relevant to emissions tracking
-* quantities, units, dates, plant identifiers, and vendor references
+* procurement activities relevant to emissions
+* quantities, units, timestamps, plant/vendor identifiers
 
-This decision helped keep the ingestion pipeline understandable while still preserving realistic SAP complexity. It also reflects how ESG systems commonly work in practice, where only certain ERP activities are mapped into sustainability reporting workflows.
+This was done because full ERP ingestion would:
 
-I also found SAP exports significantly more complex and difficult to handle compared to the other sources. Unlike utility or travel data, SAP exports are heavily tied to ERP-specific business processes and often contain operational fields that are difficult to interpret without domain knowledge.
-
-In many cases:
-
-* column names are abbreviated
-* business meaning depends on lookup tables
-* units are inconsistent
-* data structures vary across organizations
-* important context exists outside the exported file itself
-
-This complexity was one of the reasons I intentionally limited the prototype to a smaller, realistic subset of SAP fuel and procurement workflows instead of attempting full ERP coverage.
-
+* add unnecessary complexity for a prototype
+* obscure ESG-specific transformation logic
+* require large-scale schema handling systems
 
 ---
 
-## Why I Chose CSV/Excel Uploads
+## Why CSV/Excel Uploads
 
-I chose CSV/Excel uploads because:
+I chose CSV/Excel because:
 
-* they are realistic for onboarding workflows
-* easier to prototype within 4 days
-* preserve operational messiness
-* allow focus on normalization and auditability
-
-The assignment is mainly about:
-
-* handling messy data
-* normalization
-* analyst review workflows
-
-not about building deep SAP integrations.
+* they are commonly used in real ESG onboarding
+* they preserve operational messiness
+* they avoid integration complexity
+* they allow focus on normalization + validation
 
 ---
 
-## Why I Did Not Choose Other SAP Formats
+## Why Other SAP Formats Were Not Used
 
 ### IDoc
 
-I did not choose IDoc because:
-
-* it is very SAP-specific
-* highly complex
-* unnecessary for a prototype
+Too SAP-specific and complex for prototype scope.
 
 ### OData APIs
 
-I did not choose OData because:
-
-* requires authentication and SAP setup
-* integration work would take too much time
-* not central to the assignment goals
+Require authentication, setup, and enterprise configuration.
 
 ### BAPI
 
-I did not choose BAPI because:
-
-* it is more integration-heavy
-* too enterprise-specific for this scope
+Integration-heavy and not necessary for ESG ingestion simulation.
 
 ---
 
-## Why My Sample Data Looks Like This
+## Dataset Design Rationale
 
-The SAP sample dataset intentionally contains:
+The dataset intentionally includes:
 
-* ERP-style headers
-* vendor codes
-* plant codes
-* mixed units (liters and gallons)
+* ERP-style column names
+* vendor and plant codes
+* mixed units (liters/gallons)
 * inconsistent date formats
 
-I designed the data this way because real operational exports are rarely perfectly clean.
+This reflects real-world ERP exports where data is:
 
-The goal was to simulate:
+* fragmented
+* inconsistent
+* context-dependent
 
-* normalization problems
-* validation issues
-* analyst review needs
-
-instead of creating unrealistic clean datasets.
+The goal was to simulate **normalization and validation challenges**, not create clean analytical data.
 
 ---
 
-## What Would Break In Real Deployment
+## What Would Break in Production
 
-In a real production system, several things would become more complicated:
+In real deployments:
 
-* different clients would have different SAP schemas
-* export formats could change
-* files could become extremely large
-* lookup tables might differ between companies
-* duplicate uploads may happen(But I handled it)
+* schemas differ across SAP implementations
+* exports vary by organization and region
+* file sizes can be extremely large
+* duplicate uploads may occur
+* lookup mappings vary between clients
 
-A real system would likely need:
+A production system would require:
 
-* configurable mapping systems
-* asynchronous processing
 * schema versioning
-* stronger reconciliation workflows
-
-These were intentionally left out to keep the prototype focused and understandable.
+* configurable mapping layers
+* async ingestion pipelines
+* reconciliation workflows
 
 ---
 
@@ -187,110 +147,99 @@ These were intentionally left out to keep the prototype focused and understandab
 
 ## What I Researched
 
-I researched how facilities and operations teams usually manage electricity usage data.
+Utility data is typically sourced from:
 
-I found that utility data commonly comes from:
+* utility portal exports (CSV/Excel)
+* billing dashboards
+* PDF invoices
+* APIs (varies by provider)
 
-* utility portal CSV exports
-* Excel reports
-* PDF bills
-* utility APIs
+Links: https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=table_es1a
 
-Most operational workflows still rely heavily on exported reports and spreadsheets.
-
-I also noticed that utility data usually contains:
-
-* billing periods
-* meter IDs
-* tariff structures
-* energy units like kWh or MWh
+Most organizations still rely on exported reports rather than APIs.
 
 ---
 
 ## What I Learned
 
-One important thing I learned is that utility reporting does not align neatly with ESG reporting periods.
+Utility data is often:
 
-For example:
+* not aligned with ESG reporting periods
+* inconsistent in units (kWh vs MWh)
+* dependent on provider-specific formats
 
-* billing periods may overlap months
-* some reports use kWh while others use MWh
-* tariff structures vary between providers
+Billing cycles may:
 
-I also learned that utility APIs are not standardized across providers, so onboarding often begins with exported reports.
+* overlap months
+* include corrections
+* vary by tariff structure
 
----
-
-## Why I Chose CSV/Excel Uploads
-
-I chose CSV/Excel uploads because:
-
-* they are commonly used operationally
-* easy to normalize
-* realistic for facilities teams
-* avoid unnecessary API integration complexity
-
-This allowed the prototype to focus more on:
-
-* ingestion
-* normalization
-* validation
-* audit workflows
+This makes normalization necessary before emissions calculation.
 
 ---
 
-## Why I Did Not Choose PDFs
+## Why CSV/Excel Uploads
 
-I did not choose PDF bills because:
+I chose CSV/Excel because:
+
+* they are the most common operational format
+* easier to normalize than PDFs
+* widely used in facilities reporting
+* reduce integration complexity
+
+---
+
+## Why PDFs Were Not Used
+
+PDF bills were excluded because:
 
 * extraction is unreliable
 * OCR introduces errors
-* layouts vary heavily
-* parsing would take focus away from ESG workflows
+* layouts vary widely across providers
+* increases complexity unrelated to ESG logic
 
 ---
 
-## Why I Did Not Choose APIs
+## Why APIs Were Not Used
 
-I did not choose utility APIs because:
+APIs were excluded because:
 
-* provider support varies
-* authentication/setup takes time
-* APIs are not central to the assignment goals
+* provider-specific authentication is required
+* schemas vary across utilities
+* integration overhead is high for prototype scope
 
 ---
 
-## Why My Sample Data Looks Like This
+## Dataset Design Rationale
 
-The utility dataset intentionally contains:
+The dataset includes:
 
-* kWh and MWh units
-* different billing periods
+* kWh and MWh values
+* multiple billing periods
 * tariff categories
-* commercial and industrial usage
+* commercial + industrial usage
 
-I designed the data this way because real utility reporting is inconsistent and requires normalization.
+This reflects real-world utility data, which is:
 
-The goal was to simulate realistic operational reporting challenges.
+* inconsistent across providers
+* not standardized for ESG reporting
 
 ---
 
-## What Would Break In Real Deployment
+## What Would Break in Production
 
-In a real deployment:
+In real systems:
 
-* utility providers may export data differently
-* billing corrections may happen later
-* duplicate meter records may appear
-* some data may be incomplete
+* provider formats differ significantly
+* billing corrections may occur after reporting
+* meter duplication can happen
+* missing or partial data is common
 
-A production system would likely need:
+A production system would require:
 
-* provider-specific validation
-* configurable ingestion mappings
-* reconciliation workflows
-
-These were intentionally excluded from the prototype scope.
+* provider-specific validation rules
+* reconciliation pipelines
+* mapping configuration layers
 
 ---
 
@@ -298,151 +247,127 @@ These were intentionally excluded from the prototype scope.
 
 ## What I Researched
 
-I researched how platforms like:
+I studied corporate travel systems such as:
 
 * SAP Concur
 * Navan
-* corporate travel systems
+* enterprise expense platforms
 
-expose travel and expense data.
+Links: https://help.sap.com/docs/CONCUR_EXPENSE/1c6701a5b9ea4cc69eee62d00f2cf326/858113ec6f0c1014bf9d946242cf2f47.html,     
+      https://www.youtube.com/watch?v=Hr94U2ORbM8&t=5s
 
-I found that travel data is commonly available through:
+
+Travel data is typically available through:
 
 * spreadsheet exports
 * reporting dashboards
 * APIs
-* expense reports
-
-Travel exports often contain different categories such as:
-
-* flights
-* hotels
-* taxis
-* trains
-
-Each category exposes different kinds of data.
-
-For example:
-
-* flights may only contain airport codes
-* hotels contain number of nights
-* taxi records may contain pickup/drop locations
+* expense systems
 
 ---
 
 ## What I Learned
 
-One important thing I learned is that travel data is often incomplete or sparse.
+Travel data is often:
 
-Not every row contains distance information.
+* incomplete or sparse
+* category-dependent (flight/hotel/taxi/train)
+* inconsistent in metadata availability
 
-Different travel categories require different emission logic.
+Examples:
 
-I also learned that ESG onboarding often starts from exported reports rather than live integrations.
+* flights → airport codes only
+* hotels → nights + location
+* taxis → pickup/drop but no distance
 
----
-
-## Why I Chose CSV/Excel Uploads
-
-I chose CSV/Excel uploads because:
-
-* they are realistic operational exports
-* easier to normalize
-* avoid OAuth/security complexity
-* suitable for the assignment timeline
-
-This allowed me to focus more on:
-
-* normalization
-* analyst review workflows
-* auditability
-
-instead of third-party integrations.
+Different categories require different emission logic.
 
 ---
 
-## Why I Did Not Choose PDFs
+## Why CSV/Excel Uploads
 
-I did not choose PDFs because:
+I chose CSV/Excel because:
 
-* structured extraction is difficult
-* layouts vary
-* parsing reliability is low
-
----
-
-## Why I Did Not Choose APIs
-
-I did not choose APIs because:
-
-* OAuth/security setup takes time
-* provider schemas vary
-* integration complexity is high for a prototype
+* they are standard export formats
+* avoid OAuth and integration complexity
+* are widely used in expense reporting
+* allow focus on normalization logic
 
 ---
 
-## Why My Sample Data Looks Like This
+## Why PDFs Were Not Used
 
-The travel dataset intentionally contains:
+PDF expense reports were excluded because:
 
-* flights
-* hotels
-* trains
-* taxis
-* sparse fields
-* airport-code-only rows
-* missing distances
-
-I designed the dataset this way because real operational travel exports are rarely complete or perfectly structured.
-
-The goal was to simulate:
-
-* normalization challenges
-* validation handling
-* analyst review workflows
+* structure varies widely
+* extraction is unreliable
+* increases noise in ingestion pipeline
 
 ---
 
-## What Would Break In Real Deployment
+## Why APIs Were Not Used
 
-In a real deployment:
+APIs were excluded because:
 
-* travel schemas may vary by provider
-* duplicate expense records may appear
-* route information may be missing
-* currencies may differ
-* category mappings may change
+* require authentication flows
+* schemas vary by provider
+* integration time is high for prototype scope
 
-A production system would likely require:
+---
 
-* enrichment pipelines
-* airport-distance lookups
-* stronger reconciliation workflows
+## Dataset Design Rationale
 
-These were intentionally excluded from the prototype scope.
+The dataset intentionally includes:
+
+* flights, hotels, trains, taxis
+* sparse or missing fields
+* airport-code-only records
+* missing distance data
+
+This reflects real-world travel exports where:
+
+* data is fragmented
+* completeness is inconsistent
+* enrichment is required for ESG use cases
+
+---
+
+## What Would Break in Production
+
+In real systems:
+
+* schemas vary by travel provider
+* duplicate expense entries occur
+* currency inconsistencies exist
+* route/distance data is often missing
+
+A production system would require:
+
+* enrichment pipelines (distance APIs, airport mapping)
+* reconciliation systems
+* standardized category mapping layers
 
 ---
 
 # Final Notes
 
-Across all three sources, I intentionally chose structured file uploads instead of APIs because:
+Across all three sources, I intentionally standardized ingestion on **CSV/Excel files** because:
 
-* this is realistic during enterprise onboarding
-* onboarding often starts with exported reports
-* APIs require significant integration work
-* the assignment focuses more on normalization and auditability
+* enterprise onboarding typically begins with exports
+* APIs require heavy integration effort
+* the focus is ESG normalization and auditability, not connectors
 
-The prototype intentionally prioritizes:
+The prototype prioritizes:
 
-* source traceability
+* data traceability
+* normalization logic
 * analyst review workflows
-* normalization
 * auditability
 
 over:
 
 * real-time integrations
-* large-scale infrastructure
-* enterprise connector engineering
+* enterprise connector infrastructure
+* large-scale distributed systems
 
-
+---

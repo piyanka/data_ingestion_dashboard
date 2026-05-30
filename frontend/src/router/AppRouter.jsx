@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
-import { apiBase, deleteSourceFile, requestJson, updateSourceFile, uploadSourceFile } from "../api";
+import { deleteSourceFile, requestJson, uploadSourceFile } from "../api";
 import { blankUpload, reviewStatusLabels, routeLabels, routes } from "../constants";
 import MainLayout from "../layouts/MainLayout";
 import ActivitiesPageRoute from "../pages/activities";
@@ -14,6 +14,17 @@ import UploadPageRoute from "../pages/upload";
 import ValidationPageRoute from "../pages/validation";
 
 const REVIEW_PAGE_SIZE = 8;
+const ACTIVE_ORGANIZATION_STORAGE_KEY = "breathe-esg.active-organization-id";
+
+function buildOrganizationQuery(organizationId) {
+  if (!organizationId) return "";
+  return `?organization_id=${encodeURIComponent(organizationId)}`;
+}
+
+function readStoredOrganizationId() {
+  if (typeof window === "undefined") return "";
+  return window.localStorage.getItem(ACTIVE_ORGANIZATION_STORAGE_KEY) || "";
+}
 
 export default function AppRouter() {
   return (
@@ -29,14 +40,8 @@ function DashboardApp() {
   const route = location.pathname === "/index.html" ? "/" : location.pathname;
   const [uploadForm, setUploadForm] = useState(blankUpload);
   const [organizations, setOrganizations] = useState([]);
-  const [activeOrganizationId, setActiveOrganizationId] = useState("");
+  const [activeOrganizationId, setActiveOrganizationId] = useState(() => readStoredOrganizationId());
   const [sourceFiles, setSourceFiles] = useState([]);
-  const [selectedSourceFileId, setSelectedSourceFileId] = useState(null);
-  const [sourceFileEditForm, setSourceFileEditForm] = useState({
-    organization_id: "",
-    source_type: "sap",
-    filename: "",
-  });
   const [sourceFileSaving, setSourceFileSaving] = useState(false);
   const [rawRecords, setRawRecords] = useState([]);
   const [activities, setActivities] = useState([]);
@@ -64,6 +69,10 @@ function DashboardApp() {
   const [reviewNotes, setReviewNotes] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const latestOrganizationIdRef = useRef("");
+  const loadRequestIdRef = useRef(0);
+  const workspaceHydratedRef = useRef(false);
+  const skipActiveOrganizationReloadRef = useRef(true);
 
   const selectedActivity = useMemo(
     () => activities.find((activity) => String(activity.id) === String(selectedActivityId)) || null,
@@ -74,11 +83,6 @@ function DashboardApp() {
     () =>
       validationIssues.find((issue) => String(issue.id) === String(selectedValidationIssueId)) || null,
     [validationIssues, selectedValidationIssueId]
-  );
-
-  const selectedSourceFile = useMemo(
-    () => sourceFiles.find((file) => String(file.id) === String(selectedSourceFileId)) || null,
-    [sourceFiles, selectedSourceFileId]
   );
 
   const activeOrganization = useMemo(
@@ -145,18 +149,48 @@ function DashboardApp() {
   }, [activeOrganizationId]);
 
   useEffect(() => {
-    if (organizations.length === 0) {
-      if (activeOrganizationId !== "") {
-        setActiveOrganizationId("");
-      }
+    latestOrganizationIdRef.current = activeOrganizationId;
+  }, [activeOrganizationId]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (activeOrganizationId) {
+      window.localStorage.setItem(ACTIVE_ORGANIZATION_STORAGE_KEY, activeOrganizationId);
+    } else {
+      window.localStorage.removeItem(ACTIVE_ORGANIZATION_STORAGE_KEY);
+    }
+  }, [activeOrganizationId]);
+
+  useEffect(() => {
+    if (!organizations.length || workspaceHydratedRef.current) return;
+
+    workspaceHydratedRef.current = true;
+
+    if (!activeOrganizationId && organizations[0]) {
+      setActiveOrganizationId(String(organizations[0].id));
+    }
+  }, [organizations]);
+
+  useEffect(() => {
+    if (skipActiveOrganizationReloadRef.current) {
+      skipActiveOrganizationReloadRef.current = false;
       return;
     }
 
-    if (!activeOrganization || !organizations.some((organization) => String(organization.id) === String(activeOrganizationId))) {
-      const firstOrganization = organizations[0];
-      setActiveOrganizationId(String(firstOrganization.id));
-    }
-  }, [organizations, activeOrganization, activeOrganizationId]);
+    if (!activeOrganizationId) return;
+
+    setValidationPage(1);
+    setReviewPage(1);
+    setActivitiesPage(1);
+    setRawRecordsPage(1);
+    setAuditPage(1);
+    setSelectedValidationIssueId(null);
+    setSelectedRecord(null);
+    setReviewNotes("");
+    setSelectedRawRecordId(null);
+    setSelectedActivityId(null);
+    loadDashboard(true);
+  }, [activeOrganizationId]);
 
   useEffect(() => {
     if (validationIssues.length === 0) {
@@ -171,7 +205,59 @@ function DashboardApp() {
     }
   }, [validationIssues, selectedValidationIssue, selectedValidationIssueId]);
 
+  useEffect(() => {
+    if (reviewQueue.length === 0) {
+      if (selectedRecord !== null) {
+        setSelectedRecord(null);
+        setReviewNotes("");
+      }
+      return;
+    }
+
+    if (!selectedRecord || !reviewQueue.some((activity) => String(activity.id) === String(selectedRecord.id))) {
+      const firstRecord = reviewQueue[0];
+      setSelectedRecord(firstRecord);
+      setReviewNotes(firstRecord.review_notes || "");
+    }
+  }, [reviewQueue, selectedRecord]);
+
+  useEffect(() => {
+    if (rawRecords.length === 0) {
+      if (selectedRawRecordId !== null) {
+        setSelectedRawRecordId(null);
+      }
+      return;
+    }
+
+    if (!rawRecords.some((record) => String(record.id) === String(selectedRawRecordId))) {
+      setSelectedRawRecordId(rawRecords[0].id);
+    }
+  }, [rawRecords, selectedRawRecordId]);
+
+  useEffect(() => {
+    if (activities.length === 0) {
+      if (selectedActivityId !== null) {
+        setSelectedActivityId(null);
+      }
+      return;
+    }
+
+    const routeMatch = route.match(/^\/activities\/(\d+)$/);
+    if (routeMatch && activities.some((activity) => String(activity.id) === routeMatch[1])) {
+      if (String(selectedActivityId) !== routeMatch[1]) {
+        setSelectedActivityId(routeMatch[1]);
+      }
+      return;
+    }
+
+    if (!selectedActivity || !activities.some((activity) => String(activity.id) === String(selectedActivityId))) {
+      setSelectedActivityId(activities[0].id);
+    }
+  }, [activities, route, selectedActivity, selectedActivityId]);
+
   async function loadDashboard(silent = false) {
+    const requestId = ++loadRequestIdRef.current;
+    const organizationId = activeOrganizationId;
     if (silent) {
       setRefreshing(true);
     } else {
@@ -179,15 +265,19 @@ function DashboardApp() {
     }
     setError("");
     try {
+      const organizationQuery = buildOrganizationQuery(organizationId);
       const [organizationsRes, sourceFilesRes, rawRecordsRes, activitiesRes, reviewQueueRes, issuesRes, auditLogsRes] = await Promise.all([
         requestJson("/organizations/"),
-        requestJson("/source-files/"),
-        requestJson("/raw-records/"),
-        requestJson("/activities/"),
-        requestJson("/review-queue/"),
-        requestJson("/validation-issues/"),
-        requestJson("/audit-logs/"),
+        requestJson(`/source-files/${organizationQuery}`),
+        requestJson(`/raw-records/${organizationQuery}`),
+        requestJson(`/activities/${organizationQuery}`),
+        requestJson(`/review-queue/${organizationQuery}`),
+        requestJson(`/validation-issues/${organizationQuery}`),
+        requestJson(`/audit-logs/${organizationQuery}`),
       ]);
+      if (requestId !== loadRequestIdRef.current || latestOrganizationIdRef.current !== organizationId) {
+        return;
+      }
       setOrganizations(organizationsRes);
       setSourceFiles(sourceFilesRes);
       setRawRecords(rawRecordsRes);
@@ -195,47 +285,39 @@ function DashboardApp() {
       setReviewQueue(reviewQueueRes);
       setValidationIssues(issuesRes);
       setAuditLogs(auditLogsRes);
-      if (!selectedValidationIssueId && issuesRes.length > 0) {
-        setSelectedValidationIssueId(issuesRes[0].id);
-      }
-      if (!selectedSourceFileId && sourceFilesRes.length > 0) {
-        setSelectedSourceFileId(sourceFilesRes[0].id);
-      }
-      if (!selectedRecord && reviewQueueRes.length > 0) {
-        setSelectedRecord(reviewQueueRes[0]);
-        setReviewNotes(reviewQueueRes[0].review_notes || "");
-      }
-      if (!selectedRawRecordId && rawRecordsRes.length > 0) {
-        setSelectedRawRecordId(rawRecordsRes[0].id);
-      }
+      const nextValidationIssue =
+        issuesRes.find((issue) => String(issue.id) === String(selectedValidationIssueId)) || issuesRes[0] || null;
+      const nextSelectedRecord =
+        reviewQueueRes.find((activity) => String(activity.id) === String(selectedRecord?.id)) || reviewQueueRes[0] || null;
+      const nextRawRecord =
+        rawRecordsRes.find((record) => String(record.id) === String(selectedRawRecordId)) || rawRecordsRes[0] || null;
+      const routeMatch = route.match(/^\/activities\/(\d+)$/);
+      const nextActivity =
+        activitiesRes.find((activity) => String(activity.id) === String(selectedActivityId))
+        || (routeMatch
+          ? activitiesRes.find((activity) => String(activity.id) === routeMatch[1])
+          : null)
+        || activitiesRes[0]
+        || null;
+
+      setSelectedValidationIssueId(nextValidationIssue ? nextValidationIssue.id : null);
+      setSelectedRecord(nextSelectedRecord);
+      setReviewNotes(nextSelectedRecord ? nextSelectedRecord.review_notes || "" : "");
+      setSelectedRawRecordId(nextRawRecord ? nextRawRecord.id : null);
+      setSelectedActivityId(nextActivity ? nextActivity.id : null);
     } catch (err) {
+      if (requestId !== loadRequestIdRef.current) {
+        return;
+      }
       setError(err.message || "Unable to load dashboard data.");
     } finally {
+      if (requestId !== loadRequestIdRef.current) {
+        return;
+      }
       setLoading(false);
       setRefreshing(false);
     }
   }
-
-  useEffect(() => {
-    if (sourceFiles.length === 0) {
-      if (selectedSourceFileId !== null) {
-        setSelectedSourceFileId(null);
-      }
-      return;
-    }
-
-    if (!selectedSourceFile) {
-      setSelectedSourceFileId(sourceFiles[0].id);
-      return;
-    }
-    if (selectedSourceFile) {
-      setSourceFileEditForm({
-        organization_id: selectedSourceFile.organization,
-        source_type: selectedSourceFile.source_type,
-        filename: selectedSourceFile.filename,
-      });
-    }
-  }, [selectedSourceFile, sourceFiles, selectedSourceFileId]);
 
   async function handleUpload(event) {
     event.preventDefault();
@@ -273,7 +355,7 @@ function DashboardApp() {
       const nextRecord = reviewQueue[nextQueueIndex] || null;
       const nextPage = nextRecord ? Math.floor(nextQueueIndex / REVIEW_PAGE_SIZE) + 1 : 1;
 
-      const updated = await requestJson(`/activities/${activityId}/review/`, {
+      const updated = await requestJson(`/activities/${activityId}/review/${buildOrganizationQuery(activeOrganizationId)}`, {
         method: "POST",
         body: JSON.stringify({
           status,
@@ -318,40 +400,27 @@ function DashboardApp() {
     }
   }
 
-  async function handleSourceFileSave(sourceFileId) {
-    setSourceFileSaving(true);
-    setError("");
-    setMessage("");
-    try {
-      await updateSourceFile(sourceFileId, {
-        organization_id: sourceFileEditForm.organization_id,
-        source_type: sourceFileEditForm.source_type,
-        filename: sourceFileEditForm.filename,
-      });
-      setMessage("Source file updated.");
-      await loadDashboard(true);
-    } catch (err) {
-      setError(err.message || "Unable to update source file.");
-    } finally {
-      setSourceFileSaving(false);
-    }
-  }
-
-  async function handleSourceFileDelete(sourceFileId) {
+  async function handleSourceFileReplace(sourceFile) {
     const confirmed = window.confirm(
-      "Delete this source file? This will also remove its raw records, normalized activities, validation issues, and emissions."
+      "Replace this batch? The existing source file will be deleted first, then you can upload the corrected file again."
     );
     if (!confirmed) return;
+
     setSourceFileSaving(true);
     setError("");
     setMessage("");
     try {
-      await deleteSourceFile(sourceFileId);
-      setMessage("Source file deleted.");
-      setSelectedSourceFileId(null);
+      await deleteSourceFile(sourceFile.id);
+      setMessage("Batch removed. Please upload the corrected file next.");
       await loadDashboard(true);
+      setUploadForm({
+        ...blankUpload,
+        organization_id: String(sourceFile.organization),
+        source_type: sourceFile.source_type,
+      });
+      navigate("/upload");
     } catch (err) {
-      setError(err.message || "Unable to delete source file.");
+      setError(err.message || "Unable to replace source file.");
     } finally {
       setSourceFileSaving(false);
     }
@@ -470,14 +539,7 @@ function DashboardApp() {
         {route === "/source-files" ? (
           <SourceFilesPageRoute
             sourceFiles={sourceFiles}
-            organizations={organizations}
-            selectedSourceFileId={selectedSourceFileId}
-            setSelectedSourceFileId={setSelectedSourceFileId}
-            selectedSourceFile={selectedSourceFile}
-            sourceFileEditForm={sourceFileEditForm}
-            setSourceFileEditForm={setSourceFileEditForm}
-            handleSourceFileSave={handleSourceFileSave}
-            handleSourceFileDelete={handleSourceFileDelete}
+            handleSourceFileReplace={handleSourceFileReplace}
             saving={sourceFileSaving}
           />
         ) : null}

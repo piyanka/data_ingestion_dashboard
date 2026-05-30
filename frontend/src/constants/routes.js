@@ -21,7 +21,7 @@ export const routes = [
   },
   {
     path: "/source-files",
-    label: "Upload History",
+    label: "Source Files",
     description: "View uploaded file batches",
   },
   {

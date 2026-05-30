@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Q
 from django.utils import timezone
 from django.db import transaction
 
@@ -25,6 +26,13 @@ class SourceFileViewSet(viewsets.ModelViewSet):
     queryset = SourceFile.objects.select_related("organization").all()
     serializer_class = SourceFileSerializer
     http_method_names = ["get", "put", "patch", "delete", "head", "options"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        organization_id = self.request.query_params.get("organization_id")
+        if organization_id:
+            queryset = queryset.filter(organization_id=organization_id)
+        return queryset
 
     def get_serializer_class(self):
         if self.action in {"update", "partial_update"}:
@@ -98,10 +106,24 @@ class RawRecordViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = RawRecord.objects.select_related("source_file").all()
     serializer_class = RawRecordSerializer
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        organization_id = self.request.query_params.get("organization_id")
+        if organization_id:
+            queryset = queryset.filter(source_file__organization_id=organization_id)
+        return queryset
+
 
 class NormalizedActivityViewSet(viewsets.ModelViewSet):
     queryset = NormalizedActivity.objects.select_related("organization", "raw_record").all()
     serializer_class = NormalizedActivitySerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        organization_id = self.request.query_params.get("organization_id")
+        if organization_id:
+            queryset = queryset.filter(organization_id=organization_id)
+        return queryset
 
     @action(detail=True, methods=["post"])
     def review(self, request, pk=None):
@@ -137,7 +159,24 @@ class EmissionRecordViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = EmissionRecord.objects.select_related("activity").all()
     serializer_class = EmissionRecordSerializer
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        organization_id = self.request.query_params.get("organization_id")
+        if organization_id:
+            queryset = queryset.filter(activity__organization_id=organization_id)
+        return queryset
+
 
 class ValidationIssueViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ValidationIssue.objects.select_related("activity", "raw_record").all()
     serializer_class = ValidationIssueSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        organization_id = self.request.query_params.get("organization_id")
+        if organization_id:
+            queryset = queryset.filter(
+                Q(activity__organization_id=organization_id)
+                | Q(raw_record__source_file__organization_id=organization_id)
+            )
+        return queryset
