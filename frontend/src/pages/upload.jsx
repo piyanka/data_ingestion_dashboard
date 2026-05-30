@@ -26,12 +26,17 @@ function UploadPage({
   ];
 
   return (
-    <section className="panel upload-panel">
+    <section className="panel upload-panel" style={{
+    padding: "24px",
+    margin: "16px",
+    borderRadius: "12px",
+  }}>
+      <br/>
       <div style={{textAlign:  "center"}}>
           <p className="panel-title upload-font" >Upload dashboard</p>
       </div>
-      
-      <br/>
+{/*       
+      <br/> */}
       <form className="form-grid" onSubmit={handleUpload}>
         <label className="full-width">
           Organization

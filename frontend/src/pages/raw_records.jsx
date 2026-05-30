@@ -38,114 +38,17 @@ function RawRecordsPage({
     }
   }, [safePage, currentRows, selectedRawRecordId, setSelectedRawRecordId]);
 
-  // return (
-  //   <section className="content-grid">
-  //     <article className="panel">
-  //       <div className="panel-header">
-  //         <div>
-  //           <p className="panel-title">Raw records dashboard</p>
-  //           <h2>Original rows exactly as uploaded</h2>
-  //         </div>
-  //       </div>
 
-  //       <div className="list-summary">
-  //         <span>
-  //           Showing {rawRecords.length === 0 ? 0 : startIndex + 1}-{Math.min(startIndex + pageSize, rawRecords.length)} of {rawRecords.length}
-  //         </span>
-  //         <PaginationControls page={safePage} totalPages={totalPages} onPageChange={setPage} />
-  //       </div>
-
-  //       <div className="table-wrap">
-  //         <table>
-  //           <thead>
-  //             <tr>
-  //               <th>Row</th>
-  //               <th>Source file</th>
-  //               <th>Status</th>
-  //               <th>Payload preview</th>
-  //             </tr>
-  //           </thead>
-  //           <tbody>
-  //             {currentRows.length === 0 ? (
-  //               <tr>
-  //                 <td colSpan="4" className="table-empty">
-  //                   No raw records have been uploaded yet.
-  //                 </td>
-  //               </tr>
-  //             ) : (
-  //               currentRows.map((record) => (
-  //                 <tr
-  //                   key={record.id}
-  //                   className={`clickable-row ${String(record.id) === String(selectedRawRecord?.id) ? "selected-row" : ""}`}
-  //                   onClick={() => setSelectedRawRecordId(record.id)}
-  //                 >
-  //                   <td>{record.row_number}</td>
-  //                   <td>{record.source_file_filename || `Source file ${record.source_file}`}</td>
-  //                   <td>
-  //                     <span className={`status-pill status-${record.parse_status}`}>{record.parse_status}</span>
-  //                   </td>
-  //                   <td>{previewJson(record.raw_payload)}</td>
-  //                 </tr>
-  //               ))
-  //             )}
-  //           </tbody>
-  //         </table>
-  //       </div>
-  //     </article>
-
-  //     <article className="panel">
-  //       <div className="panel-header">
-  //         <div>
-  //           <p className="panel-title">Raw payload detail</p>
-  //           <h2>What was actually received</h2>
-  //         </div>
-  //         {selectedRawRecord ? <span className="badge">{selectedRawRecord.parse_status}</span> : null}
-  //       </div>
-
-  //       {selectedRawRecord ? (
-  //         <div className="detail-stack">
-  //           <div className="detail-row">
-  //             <span>Source file</span>
-  //             <strong>{selectedRawRecord.source_file_filename || `Source file ${selectedRawRecord.source_file}`}</strong>
-  //           </div>
-  //           <div className="detail-row">
-  //             <span>Row number</span>
-  //             <strong>{selectedRawRecord.row_number}</strong>
-  //           </div>
-  //           <div className="detail-row">
-  //             <span>Parse status</span>
-  //             <strong>{selectedRawRecord.parse_status}</strong>
-  //           </div>
-  //           {selectedRawRecord.error_message ? (
-  //             <div className="issue-card severity-high">
-  //               <strong>Parse error</strong>
-  //               <span>{selectedRawRecord.error_message}</span>
-  //             </div>
-  //           ) : null}
-  //           <pre className="raw-json">{JSON.stringify(selectedRawRecord.raw_payload, null, 2)}</pre>
-  //         </div>
-  //       ) : (
-  //         <div className="empty-state">Select a raw row to inspect the full uploaded payload.</div>
-  //       )}
-  //     </article>
-  //   </section>
-  // );
   return (
   <section className="raw-records-layout">
     {/* LEFT SIDE */}
     <article className="panel raw-table-panel">
       <div className="modern-panel-header">
         <div>
-          <p className="panel-title">
-            Raw records dashboard
-          </p>
 
-          <h2>Uploaded source records</h2>
+          <h1 style={{color: "#2f6d4a"}}>Row Records</h1>
 
-          {/* <p className="panel-subtitle">
-            Original uploaded rows preserved before
-            normalization and validation.
-          </p> */}
+
         </div>
 
         <div className="records-count-card">
@@ -248,16 +151,10 @@ function RawRecordsPage({
     <article className="panel payload-panel">
       <div className="modern-panel-header">
         <div>
-          <p className="panel-title">
-            Payload inspection
-          </p>
+          
+          <h2 style={{color: "#2f6d4a"}}>Raw payload </h2>
 
-          <h2>Raw payload details</h2>
-
-          {/* <p className="panel-subtitle">
-            Full uploaded JSON payload with parser
-            status and errors.
-          </p> */}
+    
         </div>
 
         {selectedRawRecord ? (

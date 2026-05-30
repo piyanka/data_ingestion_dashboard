@@ -32,8 +32,8 @@ function ActivitiesPage({ activities, onOpen, page, setPage, filters, setFilters
     <section className="panel">
       <div className="panel-header">
         <div>
-          <p className="panel-title">Activities dashboard</p>
-          <h2>Normalized ESG activity log</h2>
+          {/* <p >Activities dashboard</p> */}
+          <h2 style={{color: "#2f6d4a"}}>Normalized Data</h2>
         </div>
       </div>
 

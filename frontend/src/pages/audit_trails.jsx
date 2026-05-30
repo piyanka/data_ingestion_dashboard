@@ -24,15 +24,13 @@ function AuditTrailPage({ auditLogs, sourceFiles, rawRecords, activities, page, 
     <section className="panel">
       <div className="panel-header">
         <div>
-          <p className="panel-title">Audit trail dashboard</p>
-          <h2>What changed, when, and by whom</h2>
+        
+          <h1 style={{color: "#2f6d4a"}}>Audit Trail</h1>
         </div>
         <span className="badge">{auditRows.length} events</span>
       </div>
 
-      <p className="section-copy">
-        This view ties upload events, review actions, reviewer identity, and status transitions together so an analyst can answer where a number came from.
-      </p>
+     
 
       <div className="list-summary">
         <span>
