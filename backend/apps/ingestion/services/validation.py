@@ -2,6 +2,8 @@
 
 from statistics import median
 
+from django.utils import timezone
+
 from ..models import NormalizedActivity, ValidationIssue
 from .emissions import calculate_emissions_for_activity
 
@@ -79,3 +81,13 @@ def _flag_quantity_outlier(activity: NormalizedActivity) -> list[ValidationIssue
         ]
 
     return []
+
+
+def resolve_validation_issues(activity: NormalizedActivity, resolved_by=None, resolution_status: str = "") -> int:
+    unresolved_issues = ValidationIssue.objects.filter(activity=activity, resolved_at__isnull=True)
+    updated_count = unresolved_issues.update(
+        resolved_at=timezone.now(),
+        resolved_by=resolved_by,
+        resolution_status=resolution_status or "",
+    )
+    return updated_count

@@ -20,6 +20,7 @@ from .serializers import (
     ValidationIssueSerializer,
 )
 from .services.file_ingestion import ingest_source_file
+from .services.validation import resolve_validation_issues
 
 
 class SourceFileViewSet(viewsets.ModelViewSet):
@@ -139,6 +140,11 @@ class NormalizedActivityViewSet(viewsets.ModelViewSet):
         activity.reviewed_by = request.user if request.user.is_authenticated else None
         activity.reviewed_at = timezone.now()
         activity.save(update_fields=["status", "review_notes", "reviewed_by", "reviewed_at", "updated_at"])
+        resolve_validation_issues(
+            activity,
+            resolved_by=request.user if request.user.is_authenticated else None,
+            resolution_status=activity.status,
+        )
         AuditLog.objects.create(
             entity_type="NormalizedActivity",
             entity_id=str(activity.id),
@@ -179,4 +185,7 @@ class ValidationIssueViewSet(viewsets.ReadOnlyModelViewSet):
                 Q(activity__organization_id=organization_id)
                 | Q(raw_record__source_file__organization_id=organization_id)
             )
+        include_resolved = self.request.query_params.get("include_resolved", "").lower() in {"1", "true", "yes"}
+        if not include_resolved:
+            queryset = queryset.filter(resolved_at__isnull=True)
         return queryset

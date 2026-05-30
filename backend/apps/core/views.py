@@ -36,10 +36,10 @@ class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     def _source_file_ids(organization_id):
         from apps.ingestion.models import SourceFile
 
-        return SourceFile.objects.filter(organization_id=organization_id).values_list("id", flat=True)
+        return [str(source_file_id) for source_file_id in SourceFile.objects.filter(organization_id=organization_id).values_list("id", flat=True)]
 
     @staticmethod
     def _activity_ids(organization_id):
         from apps.ingestion.models import NormalizedActivity
 
-        return NormalizedActivity.objects.filter(organization_id=organization_id).values_list("id", flat=True)
+        return [str(activity_id) for activity_id in NormalizedActivity.objects.filter(organization_id=organization_id).values_list("id", flat=True)]

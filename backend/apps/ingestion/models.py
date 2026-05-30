@@ -157,6 +157,15 @@ class ValidationIssue(models.Model):
     severity = models.CharField(max_length=20, choices=Severity.choices)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    resolved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="resolved_validation_issues",
+    )
+    resolution_status = models.CharField(max_length=30, blank=True, default="")
 
     class Meta:
         ordering = ["-created_at"]

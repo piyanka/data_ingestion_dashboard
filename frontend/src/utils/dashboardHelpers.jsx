@@ -176,7 +176,7 @@ export function ValidationIssueDetail({ issue, activities, rawRecords, sourceFil
       {activity ? (
         <>
           <div className="panel-divider" />
-          <p className="panel-title">Normalized activity</p>
+          <p className="panel-title">Normalized Data</p>
           <div className="detail-row">
             <span>Activity type</span>
             <strong>{activity.activity_type}</strong>
@@ -209,14 +209,7 @@ export function ValidationIssueDetail({ issue, activities, rawRecords, sourceFil
             <span>Status</span>
             <strong>{reviewStatusLabels[activity.status] || activity.status}</strong>
           </div>
-          <div className="button-row">
-            <button className="primary-btn" type="button" onClick={onApprove}>
-              Mark approved
-            </button>
-            <button className="danger-btn" type="button" onClick={onReject}>
-              Mark rejected
-            </button>
-          </div>
+          
         </>
       ) : null}
 
@@ -227,6 +220,15 @@ export function ValidationIssueDetail({ issue, activities, rawRecords, sourceFil
           <pre className="raw-json">{JSON.stringify(rawRecord.raw_payload, null, 2)}</pre>
         </>
       ) : null}
+
+      <div className="button-row">
+            <button className="primary-btn" type="button" onClick={onApprove}>
+              Approve
+            </button>
+            <button className="danger-btn" type="button" onClick={onReject}>
+              Reject
+            </button>
+          </div>
     </div>
   );
 }

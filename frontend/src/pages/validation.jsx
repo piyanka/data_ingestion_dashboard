@@ -31,8 +31,8 @@ function ValidationPage({
       <article className="panel">
         <div className="panel-header">
           <div>
-            <p className="panel-title">Validation dashboard</p>
-            <h2>What needs human attention</h2>
+            
+            <h2 style={{color: "#2f6d4a"}}>Suspicious Rows</h2>
           </div>
         </div>
         <div className="list-summary">
@@ -55,10 +55,27 @@ function ValidationPage({
       <article className="panel">
         <div className="panel-header">
           <div>
-            <p className="panel-title">Issue detail</p>
-            <h2>Flag</h2>
+            <h2 style={{color: "#2f6d4a"}}>Issues</h2>
+            
           </div>
         </div>
+
+        {validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity)).length > 1 ? (
+              <>
+                <CompactIssueList
+                  validationIssues={validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity))}
+                  activities={activities}
+                  selectedIssueId={selectedValidationIssueId}
+                  onSelectIssue={setSelectedValidationIssueId}
+                  sourceFiles={sourceFiles}
+                  rawRecords={rawRecords}
+                  titleOnly
+                  maxItems={validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity)).length}
+                />
+              </>
+            ) : null}
+
+        <br />
         {selectedValidationIssue ? (
           <>
             <ValidationIssueDetail
@@ -77,22 +94,7 @@ function ValidationPage({
                 if (onDone) onDone();
               }}
             />
-            {validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity)).length > 1 ? (
-              <>
-                <div className="panel-divider" />
-                <p className="panel-title">All issues on this row</p>
-                <CompactIssueList
-                  validationIssues={validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity))}
-                  activities={activities}
-                  selectedIssueId={selectedValidationIssueId}
-                  onSelectIssue={setSelectedValidationIssueId}
-                  sourceFiles={sourceFiles}
-                  rawRecords={rawRecords}
-                  titleOnly
-                  maxItems={validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity)).length}
-                />
-              </>
-            ) : null}
+            
           </>
         ) : (
           <div className="empty-state">Select a suspicious row to inspect the normalized activity and raw source data.</div>

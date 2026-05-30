@@ -3,6 +3,7 @@ from rest_framework import viewsets
 
 from apps.core.models import AuditLog
 from apps.ingestion.models import NormalizedActivity
+from apps.ingestion.services.validation import resolve_validation_issues
 
 from .serializers import AnalystReviewSerializer, ReviewQueueItemSerializer
 
@@ -43,6 +44,11 @@ class AnalystReviewViewSet(viewsets.ModelViewSet):
         updated = serializer.save(
             reviewed_by=self.request.user if self.request.user.is_authenticated else None,
             reviewed_at=timezone.now(),
+        )
+        resolve_validation_issues(
+            updated,
+            resolved_by=self.request.user if self.request.user.is_authenticated else None,
+            resolution_status=updated.status,
         )
         AuditLog.objects.create(
             entity_type="NormalizedActivity",
