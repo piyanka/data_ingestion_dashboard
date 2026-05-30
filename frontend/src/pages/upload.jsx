@@ -27,18 +27,16 @@ function UploadPage({
 
   return (
     <section className="panel upload-panel">
-      <div className="upload-title">
-        <div>
-          <p className="panel-title upload-font" style={{ font: 27 }}>
-            Upload dashboard
-          </p>
-        </div>
+      <div style={{textAlign:  "center"}}>
+          <p className="panel-title upload-font" >Upload dashboard</p>
       </div>
-
+      
+      <br/>
       <form className="form-grid" onSubmit={handleUpload}>
-        <label>
+        <label className="full-width">
           Organization
           <select
+            className="full-width-field"
             value={uploadForm.organization_id}
             onChange={(event) =>
               setUploadForm((current) => ({
@@ -111,9 +109,11 @@ function UploadPage({
           />
         </label>
 
-        <button className="primary-btn" type="submit" disabled={uploading}>
-          {uploading ? "Uploading..." : "Upload and process"}
-        </button>
+        <div className="full-width">
+          <button className="primary-btn upload-submit-btn" type="submit" disabled={uploading}>
+            {uploading ? "Uploading..." : "Upload and process"}
+          </button>
+        </div>
       </form>
     </section>
   );

@@ -60,7 +60,7 @@ function ValidationPage({
           </div>
         </div>
 
-        {validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity)).length > 1 ? (
+        {/* {validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity)).length > 1 ? (
               <>
                 <CompactIssueList
                   validationIssues={validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity))}
@@ -73,7 +73,7 @@ function ValidationPage({
                   maxItems={validationIssues.filter((issue) => String(issue.activity) === String(selectedValidationIssue.activity)).length}
                 />
               </>
-            ) : null}
+            ) : null} */}
 
         <br />
         {selectedValidationIssue ? (
